@@ -19,4 +19,16 @@ class MainController
         echo MainModel::show('USER-1');
         return true;
     }
+    public function actionDelete()
+    {
+        MainModel::deleteFolder($_POST['id']);
+        echo MainModel::show('USER-1');
+        return true;
+    }
+    public function actionRename()
+    {
+        MainModel::renameFolder($_POST['id'],$_POST['new_name']);
+        echo MainModel::show('USER-1');
+        return true;
+    }
 }

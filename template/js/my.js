@@ -20,9 +20,9 @@ $(document).ready(function() {
             // Добавляем класс selected-html-element что бы наглядно показать на чем именно мы кликнули (исключительно для тестирования):
             target.addClass('selected-html-element');
             var cl = target.attr("id");
+            var dataid = target.attr("data-folid");
             if (cl != 'mainfold') {
                 // Создаем меню:
-                var dataid = target.attr("data-folid");
                 $('<div/>', {
                     class: 'context-menu' // Присваиваем блоку наш css класс контекстного меню:
                 })
@@ -39,12 +39,35 @@ $(document).ready(function() {
                     )
                     .show('fast'); // Показываем меню с небольшим стандартным эффектом jQuery. Как раз очень хорошо подходит для меню
                 $('#Create').mousedown(function (event) {
-                    if (event.which === 1 && $(event.target).attr("id") == 'Create') {
+                    if (event.which === 1) {
                         $.post("/main/create/", {id:dataid}, function (data) {
                             $("#folder").html(data);
                             });
                     }
                     });
+                $('#Delete').mousedown(function (event) {
+                    if (event.which === 1) {
+                        $.post("/main/delete/", {id:dataid}, function (data) {
+                            $("#folder").html(data);
+                        });
+                    }
+                });
+                $('#Rename').mousedown(function (event) {
+                    if (event.which === 1) {
+                        var old_name = $('div[data-folid=' + dataid + ']').html();
+                        $('div[data-folid=' + dataid + ']').html("<input class ='rename' type='text' value='" + old_name + "' required/>");
+                        $(".rename").focusout(function () { // событие клика по веб-документу
+                        var div = $(".rename"); // тут указываем ID элемента
+
+                         // и не по его дочерним элементам
+                            var new_name = div.val();
+                            $.post("/main/rename/", {id: dataid, new_name: new_name}, function (data) {
+                                $("#folder").html(data);
+                            });
+                            return false;
+                    });
+                }
+                });
 
     }
             else {
@@ -58,10 +81,16 @@ $(document).ready(function() {
                     .appendTo('body') // Присоединяем наше меню к body документа:
                     .append( // Добавляем пункты меню:
                         $('<ul/>')
-                            .append('<li ><a id="Create"  data-id ="'+dataid+'" >Create</a></li>')
+                            .append('<li ><a id="Create" >Create</a></li>')
                     )
                     .show('fast'); // Показываем меню с небольшим стандартным эффектом jQuery. Как раз очень хорошо подходит для меню
-
+                $('#Create').mousedown(function (event) {
+                    if (event.which === 1) {
+                        $.post("/main/create/", {id:dataid}, function (data) {
+                            $("#folder").html(data);
+                        });
+                    }
+                });
             }
 
         }

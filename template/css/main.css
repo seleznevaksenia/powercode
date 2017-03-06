@@ -16,16 +16,16 @@ li {
 ul {
   padding: 0; /* Убираем поля */
   margin-left: 10px; /* Отступ слева */
+  margin-top: 10px;
 }
-#fold{
-  width: 70px;
+#fold,#mainfold{
+  width: 100px;
   outline: 2px solid grey;
   height:20px;margin-top: 10px;
+  font-size:8pt;
 }
-#mainfold{
-  width: 70px;
-  outline: 2px solid grey;
-  height:20px;margin-top: 10px;
+.rename{
+  width: 100px;
 }
 #image,#folder{
   background-color: bisque;
@@ -61,6 +61,11 @@ ul {
 .context-menu ul li a { color: #333;font-size: 12px; padding: 5px; }
 
 .context-menu ul li a:hover { background-color: #eee; }
-.selected-html-element{
+.selected-html-element {
   background: silver;
 }
+.btn-file
+{ position: relative; overflow: hidden;}
+.btn-file input
+{ position: absolute; top: 0; right: 0; margin: 0; opacity: 0;filter: alpha(opacity=0);
+ transform: translate(-300px, 0) scale(4); font-size: 23px;direction: ltr; cursor: pointer; }
