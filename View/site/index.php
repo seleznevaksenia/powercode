@@ -23,18 +23,18 @@
                                                     <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                                    <li><a href="#">Login</a></li>
-                                                    <li><a href="#">Register</a></li>
+                                                    <li><a href="/main/login">Login</a></li>
+                                                    <li><a href="/main/register">Register</a></li>
                                                                                                    </ul>
                                             </div>
                                         </div>
                                         <div  class="col-sm-3 col-sm-offset-1">
-                                            <button type="button" class="btn btn-block btn-default">SYSTEM</button>
+                                            <a href="/main/system"><button type="button" class="btn btn-block btn-default">SYSTEM</button></a>
                                         </div>
                                         <div  class="col-sm-4 col-sm-offset-1">
                                             <div class="row ">
                                                 <div  class="col-sm-6">
-                                            <form method="post" class="form-horizontal" enctype="multipart/form-data">
+                                            <form method="post" class="form-horizontal" action="/main/load" enctype="multipart/form-data">
                                                 <div class="form-group" >
                                                     <span class="btn btn-default btn-file">
                             <i class="icon-plus"></i><span>Choose picture...</span>
@@ -43,6 +43,7 @@
                                                 </div>
                                         </div>
                                         <div  class="col-sm-6">
+                                            <input id="hidden" type="hidden" name="folder" value="">
                                                 <button type="submit" class="btn btn-default">Submit</button>
 
 
@@ -62,7 +63,7 @@
             <div id="folder" class="col-sm-2">
     <?php echo $list;?>
             </div>
-            <div id="image" class="col-sm-9 " >
+            <div id="image" class="col-sm-9" >
             </div>
         </div>
     </div>

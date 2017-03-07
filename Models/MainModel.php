@@ -2,11 +2,16 @@
 
 class MainModel
 {   static public $folder ="";
+
     public static function show($id) {
         $dir = ROOT . "/upload/$id";
-        $folder = self::getFolderId($dir);
-        return "<ul><li><div data-folid ='".$folder['id']."'data-perid ='".$folder['parent_id']."' id='mainfold' >".$id.showfolder($dir)."</div></li></ul>";
-
+        if($id != '') {
+            $folder = self::getFolderId($dir);
+            return "<ul><li><div data-folid ='" . $folder['id'] . "'data-perid ='" . $folder['parent_id'] . "' id='mainfold' >" . $id . "</div></li>" . showfolder($dir) . "</ul>";
+        }
+        else{
+            return showfolder($dir);
+        }
     }
     public static function getPath($id) {
         $db = Db::getConnection();
@@ -20,6 +25,7 @@ class MainModel
         $folder['parent_id'] = $row['parent_id'];
         return $folder;
     }
+
     public static function getFolderId($path) {
         $db = Db::getConnection();
         $result = $db->prepare('SELECT id,parent_id FROM folder WHERE path = :path');
@@ -28,10 +34,9 @@ class MainModel
         $row = $result->fetch();
         $folder['id'] = $row['id'];
         $folder['parent_id'] = $row['parent_id'];
-
-        //die();
         return $folder;
     }
+
     public static function createFolder($parent_id) {
        // $user_id = $_SESSION['id'];
         $user_id = 1;
@@ -45,7 +50,6 @@ class MainModel
         $result = $db->prepare($sql);
         $result->bindParam(':id', $parent_id, PDO::PARAM_STR);
         $result->execute();
-
 
         $sql = 'INSERT INTO folder (parent_id,user_id,name,path)'
             . 'VALUES (:parent_id, :user_id, :name, :path)';
@@ -66,6 +70,7 @@ class MainModel
         $result = $db->prepare($sql);
         $result->bindParam(':id', $id, PDO::PARAM_STR);
         $result->execute();
+
         if ($child['status'] == 1) {
             $massive = self::findchild($id);
             foreach ($massive as $item) {
@@ -84,9 +89,7 @@ class MainModel
                 $result->bindParam(':id', $child['parent_id'], PDO::PARAM_STR);
                 $result->execute();
             }
-
         }
-
         return true;
     }
 
@@ -99,21 +102,45 @@ class MainModel
         $new1 = $sql2['path'].'/'.$name;
 
         rename($old, $new1);
-        if(self::countChild($id)==0) {
-
-            $db = Db::getConnection();
-            $sql = "UPDATE folder SET name = :name,path = :path  WHERE id = :id";
-            $result = $db->prepare($sql);
-            $result->bindParam(':name', $name, PDO::PARAM_STR);
-            $result->bindParam(':path', $new1, PDO::PARAM_STR);
-            $result->bindParam(':id', $id, PDO::PARAM_STR);
-            $result->execute();
+        $db = Db::getConnection();
+        $sql = "UPDATE folder SET name = :name,path = :path  WHERE id = :id";
+        $result = $db->prepare($sql);
+        $result->bindParam(':name', $name, PDO::PARAM_STR);
+        $result->bindParam(':path', $new1, PDO::PARAM_STR);
+        $result->bindParam(':id', $id, PDO::PARAM_STR);
+        $result->execute();
+        if(self::countChild($id)!=0) {
+            self::updatePathAll($id);
         }
-
     }
 
+    public static function updatePathAll($id)
+    {
+        $massive = self::findchild($id);
+        foreach ($massive as $item) {
+            self::updatePath($item['id']);
+            if(self::countChild($item['id'])!=0){
+                self::updatePathAll($item['id']);
+            }
+        }
+        return true;
+    }
 
-
+    public static function updatePath($id)
+    {
+        $db = Db::getConnection();
+        $sql = self::getPath($id);
+        $name = $sql['name'];
+        $parent_id = $sql['parent_id'];
+        $sql2 = self::getPath($parent_id);
+        $parent_path = $sql2['path'];
+        $nem_path = $parent_path."/".$name;
+        $sql = "UPDATE folder SET path = :path  WHERE id = :id";
+        $result = $db->prepare($sql);
+        $result->bindParam(':path', $nem_path, PDO::PARAM_STR);
+        $result->bindParam(':id', $id, PDO::PARAM_STR);
+        $result->execute();
+    }
 
     public static function findchild($id)
     {
@@ -126,7 +153,6 @@ class MainModel
             $folder[$i]['id'] = $row['id'];
             $i++;
         }
-
         return $folder;
     }
 
@@ -140,8 +166,34 @@ class MainModel
         return $row['COUNT(*)'];
     }
 
+    public static function imagearray($path)
+    {
+      $list = scandir($path);
+      $imageArray = array();
+        if (is_array($list)) {
+            $list = array_diff($list, array('.', '..'));
+            if ($list) {
+                foreach ($list as $name) {
+                    $dir = $path. '/' . $name;
+                    if(is_file($dir)){
+                        $imageArray[] = $dir;
+                    }
+                }
+                return $imageArray;
+                }
+            }
+            return false;
+    }
 
+    public static function printimage($imageArray){
+        $print = "";
+        foreach ($imageArray as $image)
+            $image_new = str_replace("%body%", "", "<body text='%body%'>");
+            $print .= '<div class="col-sm-4"><img src=".$image." alt="" /></div>';
+        return $print;
+    }
 }
+
 function showfolder($dir){
     $list = scandir($dir);
     if (is_array($list)) {
@@ -152,15 +204,13 @@ function showfolder($dir){
                 $path = $dir . '/' . $name;
                 if (is_dir($path)){
                     $folder_path = MainModel::getFolderId($path);
-                    MainModel::$folder .= "<li><div data-folid ='".$folder_path['id']."' data-perid ='".$folder_path['parent_id']."' id='fold' >".htmlspecialchars($name)."</div>";
+                    MainModel::$folder .= "<li><div class='color' data-folid ='".$folder_path['id']."' data-perid ='".$folder_path['parent_id']."' id='fold' >".htmlspecialchars($name)."</div>";
                     showfolder($path);
                     MainModel::$folder .= '</li>';
                 }
                 else break;
             }
-
             MainModel::$folder .= '</ul>';
-
         }
     }
     return MainModel::$folder;

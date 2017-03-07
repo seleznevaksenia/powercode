@@ -8,6 +8,13 @@ class MainController
                require_once(ROOT . '/view/site/index.php');
         return true;
     }
+    public function actionSystem()
+    {
+        $list = "";
+        $list = MainModel::show('');
+        require_once(ROOT . '/view/site/index.php');
+        return true;
+    }
     public function actionError()
     {
         require_once(ROOT . '/view/site/error.php');
@@ -31,4 +38,29 @@ class MainController
         echo MainModel::show('USER-1');
         return true;
     }
+    public function actionLoad()
+    {
+
+        if (is_uploaded_file($_FILES["image"]["tmp_name"])) {
+            $name = $_FILES["image"]['name'];
+            if (isset($_POST['folder'])) {
+             $sql = MainModel::getPath($_POST['folder']);
+             $path = $sql['path'];
+                // Если загружалось, переместим его в нужную папке, дадим новое имя
+                move_uploaded_file($_FILES["image"]["tmp_name"], $path."/".$name);
+            }
+        }
+        self::actionIndex();
+        return true;
+    }
+
+    public function actionShowimage()
+    {
+        $sql = MainModel::getPath($_POST['folder']);
+        $path = $sql['path'];
+        if(MainModel::imagearray($path))
+            echo   MainModel::printimage(MainModel::imagearray($path));
+        return true;
+    }
+
 }

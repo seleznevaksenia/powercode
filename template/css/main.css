@@ -8,16 +8,20 @@
 
 
 body {
-  background-color: #adadad;
+
 }
 li {
   list-style-type: none; /* Убираем маркеры */
+}
+.color:hover{
+  background: #ff1500;
 }
 ul {
   padding: 0; /* Убираем поля */
   margin-left: 10px; /* Отступ слева */
   margin-top: 10px;
 }
+
 #fold,#mainfold{
   width: 100px;
   outline: 2px solid grey;
@@ -28,14 +32,14 @@ ul {
   width: 100px;
 }
 #image,#folder{
-  background-color: bisque;
+  border: 1px solid orange;
   height: 500px;
   margin: 1%;
   overflow: auto;
   }
 
 #search,#auth{
-  background-color: bisque;
+  background-color: #66c4ff;
   height: 50px;
   margin: 1%;
   padding: 1%;

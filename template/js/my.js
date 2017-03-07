@@ -1,15 +1,25 @@
 document.oncontextmenu = function() {return false;};
 $(document).ready(function() {
-    $(mainfold).addClass('selected-html-element');
+    $("#fold:first").addClass('selected-html-element');
+
+    $id = $(".selected-html-element").attr("data-folid");
+
+    $.post("/main/showimage", {folder:$id}, function (data) {
+        $("#image").html(data);
+    });
+
+    $("#hidden").attr ( "value", $id );
+
     // Вешаем слушатель события нажатие кнопок мыши для всего документа:
     $(document).mousedown(function(event) {
-
         // Убираем css класс selected-html-element у абсолютно всех элементов на странице с помощью селектора "*":
         $('*').removeClass('selected-html-element');
         // Удаляем предыдущие вызванное контекстное меню:
         $('.context-menu').remove();
         if (event.which === 1 && ($(event.target).attr("id")== 'mainfold' || $(event.target).attr("id")== 'fold' )) {
             var target = $(event.target);
+            var dataid = target.attr("data-folid");
+            $("#hidden").attr ( "value", dataid );
             target.addClass('selected-html-element');
         }
         // Проверяем нажата ли именно правая кнопка мыши:
@@ -21,6 +31,7 @@ $(document).ready(function() {
             target.addClass('selected-html-element');
             var cl = target.attr("id");
             var dataid = target.attr("data-folid");
+            $("#hidden").attr ( "value", dataid );
             if (cl != 'mainfold') {
                 // Создаем меню:
                 $('<div/>', {
@@ -55,7 +66,7 @@ $(document).ready(function() {
                 $('#Rename').mousedown(function (event) {
                     if (event.which === 1) {
                         var old_name = $('div[data-folid=' + dataid + ']').html();
-                        $('div[data-folid=' + dataid + ']').html("<input class ='rename' type='text' value='" + old_name + "' required/>");
+                        $('div[data-folid=' + dataid + ']').html("<input class ='rename' maxlength='10' type='text' value='" + old_name + "' required/>");
                         $(".rename").focusout(function () { // событие клика по веб-документу
                         var div = $(".rename"); // тут указываем ID элемента
 
@@ -95,7 +106,13 @@ $(document).ready(function() {
 
         }
     });
-
+    $( "form" ).submit(function() {
+        var input = $("#hidden");
+        var folder = input.val();
+        $.post("/main/showimage", {folder:folder}, function (data) {
+            $("#image").html(data);
+        });
+        });
 
 });
 
