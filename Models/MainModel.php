@@ -10,7 +10,7 @@ class MainModel
             return "<ul><li><div data-folid ='" . $folder['id'] . "'data-perid ='" . $folder['parent_id'] . "' id='mainfold' >" . $id . "</div></li>" . showfolder($dir) . "</ul>";
         }
         else{
-            return showfolder($dir);
+            return showfolder(ROOT . "/upload");
         }
     }
     public static function getPath($id) {
@@ -79,7 +79,11 @@ class MainModel
             rmdir($child['path']);
         }
         else{
-
+            $list = scandir($child['path']);
+            $list = array_diff($list, array('.','..'));
+            foreach ($list as $item)
+                //echo $child['path']. '/' . $item;
+                unlink( $child['path']. '/' . $item);
             rmdir($child['path']);
 
             if(self::countChild($child['parent_id'])== 1) {
@@ -187,9 +191,9 @@ class MainModel
 
     public static function printimage($imageArray){
         $print = "";
-        foreach ($imageArray as $image)
-            $image_new = str_replace("%body%", "", "<body text='%body%'>");
-            $print .= '<div class="col-sm-4"><img src=".$image." alt="" /></div>';
+        foreach ($imageArray as $image){
+            $image_new = str_replace(ROOT, "", $image);
+            $print .= '<div id = "photo" class="col-sm-4"><img src="'.$image_new.'" alt="" /></div>';}
         return $print;
     }
 }

@@ -13,20 +13,32 @@ body {
 li {
   list-style-type: none; /* Убираем маркеры */
 }
-.color:hover{
-  background: #ff1500;
-}
+
 ul {
   padding: 0; /* Убираем поля */
   margin-left: 10px; /* Отступ слева */
   margin-top: 10px;
 }
+#photo>img{
+  height: 200px;
+  margin: 10px;
+  border: 5px solid #b5dde5;
+}
+#photo>img:hover{
+  height: 204px;
+  margin: 6px;
+  border: 5px solid #6586e5;
+}
 
 #fold,#mainfold{
   width: 100px;
-  outline: 2px solid grey;
+  border: 3px #b5dde5 solid;
   height:20px;margin-top: 10px;
   font-size:8pt;
+  border-radius:6px;
+}
+#fold:hover,#mainfold:hover{
+  border: 3px #6586e5 solid;
 }
 .rename{
   width: 100px;
@@ -66,7 +78,7 @@ ul {
 
 .context-menu ul li a:hover { background-color: #eee; }
 .selected-html-element {
-  background: silver;
+  background: orange;
 }
 .btn-file
 { position: relative; overflow: hidden;}

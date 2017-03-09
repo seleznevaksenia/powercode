@@ -21,6 +21,9 @@ $(document).ready(function() {
             var dataid = target.attr("data-folid");
             $("#hidden").attr ( "value", dataid );
             target.addClass('selected-html-element');
+            $.post("/main/showimage", {folder:dataid}, function (data) {
+                $("#image").html(data);
+            });
         }
         // Проверяем нажата ли именно правая кнопка мыши:
         else if (event.which === 3 && ($(event.target).attr("id")== 'mainfold' || $(event.target).attr("id")== 'fold' )) {
